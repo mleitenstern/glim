@@ -20,6 +20,7 @@ public:
 public:
   double distance_near_thresh;        ///< Minimum distance threshold
   double distance_far_thresh;         ///< Maximum distance threshold
+  double intensity_thresh;            ///< Remove points with intensity <= this value before downsampling (negative: disabled)
   bool global_shutter;                ///< Assume all points in a scan are taken at the same moment and replace per-point timestamps with zero (disable deskewing)
   bool use_random_grid_downsampling;  ///< If true, use random grid downsampling, otherwise, use the conventional voxel grid
   double downsample_resolution;       ///< Downsampling resolution

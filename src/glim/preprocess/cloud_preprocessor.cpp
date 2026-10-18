@@ -27,6 +27,7 @@ CloudPreprocessorParams::CloudPreprocessorParams() {
 
   distance_near_thresh = config.param<double>("preprocess", "distance_near_thresh", 1.0);
   distance_far_thresh = config.param<double>("preprocess", "distance_far_thresh", 100.0);
+  intensity_thresh = config.param<double>("preprocess", "intensity_thresh", -1.0);
   use_random_grid_downsampling = config.param<bool>("preprocess", "use_random_grid_downsampling", false);
   downsample_resolution = config.param<double>("preprocess", "downsample_resolution", 0.15);
   downsample_target = config.param<int>("preprocess", "random_downsample_target", 0);
@@ -97,6 +98,19 @@ PreprocessedFrame::Ptr CloudPreprocessor::preprocess_impl(const RawPoints::Const
   frame->add_times(raw_points->times);
   if (raw_points->intensities.size()) {
     frame->add_intensities(raw_points->intensities);
+  }
+  add_point_attributes(*frame, normalize_point_attributes(raw_points->aux_attributes, raw_points->size()));
+
+  // Intensity filter (e.g., intensity_thresh = 0.0 removes zero-intensity returns such as multipath reflections)
+  if (params.intensity_thresh >= 0.0 && frame->intensities) {
+    std::vector<int> indices;
+    indices.reserve(frame->size());
+    for (int i = 0; i < frame->size(); i++) {
+      if (frame->intensities[i] > params.intensity_thresh) {
+        indices.push_back(i);
+      }
+    }
+    frame = gtsam_points::sample(frame, indices);
   }
   PreprocessCallbacks::on_preprocessing_begin(frame);
 
