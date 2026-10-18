@@ -99,7 +99,6 @@ PreprocessedFrame::Ptr CloudPreprocessor::preprocess_impl(const RawPoints::Const
   if (raw_points->intensities.size()) {
     frame->add_intensities(raw_points->intensities);
   }
-  add_point_attributes(*frame, normalize_point_attributes(raw_points->aux_attributes, raw_points->size()));
 
   // Intensity filter (e.g., intensity_thresh = 0.0 removes zero-intensity returns such as multipath reflections)
   if (params.intensity_thresh >= 0.0 && frame->intensities) {
